@@ -22,8 +22,12 @@ def country_list(request):
             serializer.save()
             # Get the data from OpenAPI function
             # Update fields in Hospital Model 
-            if Country.objects.filter(query__query=query_name) != None:
+            if not Query.objects.get(query=query_name).exists():
                 get_result(query_name)
+                countries = Country.objects.filter(query__query=query_name)
+                serializer_new = CountrySerializer(countries, many=True)
+                return JsonResponse(serializer_new.data, safe=False)
+            if Query.objects.get(query=query_name).exists():
                 countries = Country.objects.filter(query__query=query_name)
                 serializer_new = CountrySerializer(countries, many=True)
                 return JsonResponse(serializer_new.data, safe=False)
@@ -38,8 +42,12 @@ def country_detail(request, query_name, country_name):
     country_name = country_name.replace("_", " ")
     query_object = Query.objects.get(query=query_name)
     if request.method == 'GET':
-        highlight = get_highlight(query_name, country_name)
-        Country.objects.filter(query=query_object, country_name=country_name).update(highlights=highlight)
+        c_obj = Country.objects.filter(query=query_object, country_name=country_name)
+        for obj in c_obj:
+            if obj['highlights'] == '':  
+                if c_obj.exists():
+                    highlight = get_highlight(query_name, country_name)
+                    Country.objects.filter(query=query_object, country_name=country_name).update(highlights=highlight)
         
         try: 
             country = Country.objects.filter(query=query_object, country_name=country_name)

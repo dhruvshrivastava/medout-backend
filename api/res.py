@@ -6,7 +6,7 @@ from api.models import Country, Query
 from google_images_search import GoogleImagesSearch
 
 gis = GoogleImagesSearch('AIzaSyDdj1tm_nBO-Z0ZAWbwcLDgF5LsbQXB-Qo','c285b6813ec6e4a17')
-openai.api_key = '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'
+openai.api_key = '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'
 
 def update_model(final_list):
     '''
@@ -19,7 +19,7 @@ def update_model(final_list):
     query_object, created = Query.objects.get_or_create(query=query_name)
     for i in range(len(countries)):
         name = countries[i].replace(".", "")
-        name = name.strip()
+        name = name.strip(" ")
         _search_params = {
         'q': name + ' Hospital Building 2022',
         'num': 1,
@@ -51,7 +51,7 @@ def get_result(query_name):
     response = response["choices"][0]["text"].split("\n")
     result = []
     for r in response:
-        r = r[2:]
+        r = re.sub('\d', '%d', r)
         result.append(r.split(":"))
     countries = []
     prices = []
