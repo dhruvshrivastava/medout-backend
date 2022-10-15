@@ -4,9 +4,16 @@ import json
 import re
 from api.models import Country, Query
 from google_images_search import GoogleImagesSearch
+import environ
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
-gis = GoogleImagesSearch('AIzaSyDdj1tm_nBO-Z0ZAWbwcLDgF5LsbQXB-Qo','c285b6813ec6e4a17')
-openai.api_key = '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'
+env = environ.Env()
+environ.Env.read_env()
+
+gis = GoogleImagesSearch(os.environ['IMAGES_API'],os.environ['IMAGES_CX'])
+openai.api_key = os.environ['OPENAI']
 
 def update_model(final_list):
     '''
